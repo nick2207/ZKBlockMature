@@ -3,7 +3,6 @@ import {MatDatepickerInputEvent, MatDatepickerModule} from '@angular/material/da
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {provideNativeDateAdapter} from '@angular/material/core';
-import { exec } from 'child_process';
 
 @Component({
   selector: 'app-datainputform',
@@ -17,7 +16,7 @@ import { exec } from 'child_process';
 export class DatainputformComponent {
 
   selectedDate: Date;
-  command = 'node checkAge_js/generate_witness.js checkAge_js/checkAge.wasm input.json witness.wtns';
+  snarkJSScript: HTMLScriptElement;
 
   inputJson = {
     birthYear: "",
@@ -30,6 +29,9 @@ export class DatainputformComponent {
 
   constructor () {
     this.selectedDate = new Date();
+    this.snarkJSScript = document.createElement("script");
+      this.snarkJSScript.src = "";
+      document.body.appendChild(this.snarkJSScript);
   }
 
   onSubmit() {
