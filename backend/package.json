@@ -1,0 +1,21 @@
+{
+  "name": "zkblockmature",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "chai": "^5.1.1",
+    "chai-http": "^5.0.0",
+    "circomlib": "^2.0.5",
+    "express": "^4.19.2",
+    "mocha": "^10.4.0",
+    "web3": "^4.10.0"
+  }
+}
