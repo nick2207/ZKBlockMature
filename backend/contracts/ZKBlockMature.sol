@@ -1,33 +1,24 @@
-// SPDX-License-Identifier: MIT
-pragma solidity 0.8.21;
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "./EllipticCurve.sol";
-import "./PedersenCommitment.sol";
+import "./Verifier.sol";
 
-contract ZKBlockMature is Ownable, EllipticCurve, PedersenCommitment {
-    mapping(address => uint256) public commitments;
+interface AgeVerifier {
+        function verifyProof(bytes memory proof, uint[] memory pubSignals) external view returns (bool);
+    }
+    
+contract ZKBlockMature is Groth16Verifier{
 
-    event AgeVerified(address indexed user, bool isOldEnough);
+    address public ageVerifierAddress;
+    // event proved(address indexed _from, uint output, bool proved);
+    event ProofVerification(bool result);
 
-    function commitAge(uint256 randomValue, uint256 age) public {
-        uint256 x;
-        uint256 y;
-        (x, y) = commit(randomValue, age);
-        commitments[msg.sender] = uint256(keccak256(abi.encodePacked(x, y)));
+    constructor(address _ageVerifierAddress) {
+        ageVerifierAddress = _ageVerifierAddress;
     }
 
-    function verifyAge(uint256 randomValue, uint256 age) public {
-        uint256 x;
-        uint256 y;
-        (x, y) = commit(randomValue, age);
-        uint256 commitmentHash = uint256(keccak256(abi.encodePacked(x, y)));
-
-        // Check if the commitment matches the stored commitment
-        require(commitments[msg.sender] == commitmentHash, "Invalid commitment");
-
-        // Emit the verification result
-        bool isOldEnough = age >= 18;
-        emit AgeVerified(msg.sender, isOldEnough);
+    function verifyProof(bytes memory proof, uint[] memory pubSignals) public {
+        bool result = AgeVerifier(ageVerifierAddress).verifyProof(proof, pubSignals);
+        emit ProofVerification(result);
     }
 }
