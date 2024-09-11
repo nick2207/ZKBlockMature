@@ -1,24 +1,69 @@
-// SPDX-License-Identifier: GPL-3.0
+
+
+// // SPDX-License-Identifier: GPL-3.0
+// pragma solidity ^0.8.21;
+
+// import "./Groth16Verifier.sol";
+// import "../node_modules/hardhat/console.sol";
+
+// contract ZKBlockMature {
+
+//     Groth16Verifier public groth16Verifier;
+
+//     event ProofVerification(bool result);
+//     event DebugLog(string message, bool value); 
+
+//     constructor(address _groth16VerifierAddress) {
+//         groth16Verifier = Groth16Verifier(_groth16VerifierAddress);
+//     }
+
+//     function verifyProof(
+//         uint[2] memory _pA, 
+//         uint[2][2] memory _pB, 
+//         uint[2] memory _pC, 
+//         uint[1] memory _pubSignals
+//     ) public {
+//         emit DebugLog("Before calling verifier", false);
+//         bool result = groth16Verifier.verifyProof(_pA, _pB, _pC, _pubSignals);
+//         emit DebugLog("After calling verifier", result); // Emit event with result
+//         emit ProofVerification(result);
+//     }
+// }
+
+
 pragma solidity ^0.8.21;
 
-import "./Verifier.sol";
+// import "./Groth16Verifier.sol";
+import "./AgeVerifier.sol";
+import "../node_modules/hardhat/console.sol";
 
-interface AgeVerifier {
-        function verifyProof(bytes memory proof, uint[] memory pubSignals) external view returns (bool);
-    }
-    
-contract ZKBlockMature is Groth16Verifier{
+interface IGroth16Verifier {
+    function verifyProof(
+        uint[2] memory _pA, 
+        uint[2][2] memory _pB, 
+        uint[2] memory _pC, 
+        uint[1] memory _pubSignals
+    ) external view returns (bool);
+}
 
-    address public ageVerifierAddress;
-    // event proved(address indexed _from, uint output, bool proved);
+
+contract ZKBlockMature {
+
+    address public s_grothVerifierAddress;
+
     event ProofVerification(bool result);
 
-    constructor(address _ageVerifierAddress) {
-        ageVerifierAddress = _ageVerifierAddress;
+    constructor(address grothVerifierAddress) {
+        s_grothVerifierAddress = grothVerifierAddress;
     }
 
-    function verifyProof(bytes memory proof, uint[] memory pubSignals) public {
-        bool result = AgeVerifier(ageVerifierAddress).verifyProof(proof, pubSignals);
+    function submitProof(uint[2] memory _pA, 
+        uint[2][2] memory _pB, 
+        uint[2] memory _pC, 
+        uint[1] memory _pubSignals) public  returns (bool) {
+        bool result = IGroth16Verifier(s_grothVerifierAddress).verifyProof(_pA, _pB, _pC, _pubSignals);
         emit ProofVerification(result);
+        require(result, "Invalid Proof");
+        return true;
     }
 }
