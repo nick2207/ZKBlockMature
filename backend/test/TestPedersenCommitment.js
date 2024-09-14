@@ -21,8 +21,8 @@ contract("PedersenCommitment", (accounts) => {
     } catch (error) {
       assert.include(
         error.message,
-        "Cannot set point more than once", // Expected revert reason, should match the revert reason from Solidity
-        "Revert error message must contain revert reason"
+        "Cannot set the generator more than once", // Expected revert reason, should match the revert reason from Solidity
+        "Cannot set the generator more than once"
       );
     }
   });
@@ -31,24 +31,36 @@ contract("PedersenCommitment", (accounts) => {
     const instance = await PedersenCommitment.deployed();
     let randValue = 42;
     let valueToCommit = 100;
-    let committed = await instance.commit.call(randValue, valueToCommit);
-    let comX = committed[0];
-    let comY = committed[1];
-
+    // let committed = await instance.commit.call(randValue, valueToCommit);
+    // let comX = committed[0];
+    // let comY = committed[1];
     // console.log(
     //   "committed res: ",
     //   web3.utils.toHex(comX),
     //   web3.utils.toHex(comY)
     // );
 
-    let verify = await instance.verify.call(
-      randValue,
-      valueToCommit,
-      comX,
-      comY
+    let commitmentTx = await instance.commit(randValue, valueToCommit);
+    const event = commitmentTx.logs.find(
+      (log) => log.event === "LogCommitment"
     );
 
-    assert.equal(verify, true, `The value ${verify}.`);
+    assert(event, "LogCommitment event not found");
+
+    const txId = event.args.txId;
+
+    let verify = await instance.verify.call(randValue, valueToCommit, txId);
+
+    assert.equal(verify, true, `Commitment verification failed.`);
+
+    // let verify = await instance.verify.call(
+    //   randValue,
+    //   valueToCommit,
+    //   comX,
+    //   comY
+    // );
+
+    // assert.equal(verify, true, `The value ${verify}.`);
   });
 
   //   it("Add Commitment", async () => {

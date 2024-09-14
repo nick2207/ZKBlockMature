@@ -24,12 +24,12 @@ contract PedersenCommitment is EllipticCurve {
         _;
     }
 
-    function setPoint() internal isPointSet {
+    function setPoint() public isPointSet {
         uint256 randomValue = uint256(
             keccak256(abi.encodePacked(block.timestamp, msg.sender))
         );
         GeneratorRandomPoint = randomValue % mod;
-        emit LogSender(msg.sender);
+        // emit LogSender(msg.sender);
     }
 
     /**
