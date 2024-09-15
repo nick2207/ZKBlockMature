@@ -115,6 +115,9 @@ contract PedersenCommitment is EllipticCurve {
         randomValue3 = addmod(randomValue1, randomValue2, mod);
         (x3, y3) = ellipticAdd(x1, y1, x2, y2);
 
+        emit LogCommitment(uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), msg.sender))), x3, y3);
+
+
         return (x3, y3, randomValue3);
     }
 
@@ -137,6 +140,9 @@ contract PedersenCommitment is EllipticCurve {
         }
 
         (x3, y3) = ellipticSub(x1, y1, x2, y2);
+
+        emit LogCommitment(uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), msg.sender))), x3, y3);
+
 
         return (x3, y3, randomValue3);
     }

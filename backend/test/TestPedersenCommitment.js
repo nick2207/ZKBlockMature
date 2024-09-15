@@ -157,99 +157,245 @@ contract("PedersenCommitment", (accounts) => {
   //     // assert.equal(verify, true, `The value ${verify}.`);
   //   });
 
+  // it("Add Commitment", async () => {
+  //   const instance = await PedersenCommitment.deployed();
+
+  //   let randValue1 = 42;
+  //   let valueToCommit1 = 100;
+  //   let committed1 = await instance.commit.call(randValue1, valueToCommit1);
+  //   let comX1 = committed1[0];
+  //   let comY1 = committed1[1];
+
+  //   // console.log(
+  //   //   "committed res 1: ",
+  //   //   web3.utils.toHex(comX1),
+  //   //   web3.utils.toHex(comY1)
+  //   // );
+
+  //   let randValue2 = 42;
+  //   let valueToCommit2 = 100;
+  //   let committed2 = await instance.commit.call(randValue2, valueToCommit2);
+  //   let comX2 = committed2[0];
+  //   let comY2 = committed2[1];
+
+  //   // console.log(
+  //   //   "committed res 2: ",
+  //   //   web3.utils.toHex(comX2),
+  //   //   web3.utils.toHex(comY2)
+  //   // );
+
+  //   let verify = await instance.verify.call(
+  //     randValue1,
+  //     valueToCommit1,
+  //     comX1,
+  //     comY1
+  //   );
+
+  //   let verify2 = await instance.verify.call(
+  //     randValue2,
+  //     valueToCommit2,
+  //     comX2,
+  //     comY2
+  //   );
+
+  //   if (verify != true) {
+  //     throw new Error("Verify 1 not true");
+  //   }
+
+  //   if (verify2 != true) {
+  //     throw new Error("Verify 2 not true");
+  //   }
+
+  //   let added = await instance.addCommitment.call(
+  //     randValue1,
+  //     comX1,
+  //     comY1,
+  //     randValue2,
+  //     comX2,
+  //     comY2
+  //   );
+  //   let comSumX3 = added[0];
+  //   let comSumY3 = added[1];
+
+  //   // console.log(
+  //   //   "committed add 1: ",
+  //   //   web3.utils.toHex(comX3),
+  //   //   web3.utils.toHex(comY3)
+  //   // );
+
+  //   // console.log(
+  //   //   "SUM: ",
+  //   //   web3.utils.toHex(comSumX3),
+  //   //   web3.utils.toHex(comSumY3)
+  //   // );
+
+  //   let randValue3 = randValue1 + randValue2;
+  //   let valueToCommit3 = valueToCommit1 + valueToCommit2;
+  //   let committed3 = await instance.commit.call(randValue3, valueToCommit3);
+  //   let comX3 = committed3[0];
+  //   let comY3 = committed3[1];
+
+  //   // console.log(
+  //   //   "SINGLE COMMIT: ",
+  //   //   web3.utils.toHex(comX3),
+  //   //   web3.utils.toHex(comY3)
+  //   // );
+
+  //   let res =
+  //     web3.utils.toHex(comX3) == web3.utils.toHex(comSumX3) &&
+  //     web3.utils.toHex(comY3) == web3.utils.toHex(comSumY3);
+
+  //   // verfica che con rand diversi il valore è diverso quando torni indietro
+
+  //   // console.log(res);
+
+  //   assert.equal(verify, true, `The value ${verify}.`);
+  // });
+
+  // it("Sub Commitment", async () => {
+  //   const instance = await PedersenCommitment.deployed();
+
+  //   let randValue1 = 42;
+  //   let valueToCommit1 = 100;
+  //   let committed1 = await instance.commit.call(randValue1, valueToCommit1);
+  //   let comX1 = committed1[0];
+  //   let comY1 = committed1[1];
+
+  //   console.log(
+  //     "committed res 1: ",
+  //     web3.utils.toHex(comX1),
+  //     web3.utils.toHex(comY1)
+  //   );
+
+  //   let randValue2 = 42;
+  //   let valueToCommit2 = 100;
+  //   let committed2 = await instance.commit.call(randValue2, valueToCommit2);
+  //   let comX2 = committed2[0];
+  //   let comY2 = committed2[1];
+
+  //   // console.log(
+  //   //   "committed res 2: ",
+  //   //   web3.utils.toHex(comX2),
+  //   //   web3.utils.toHex(comY2)
+  //   // );
+
+  //   let verify = await instance.verify.call(
+  //     randValue1,
+  //     valueToCommit1,
+  //     comX1,
+  //     comY1
+  //   );
+
+  //   let verify2 = await instance.verify.call(
+  //     randValue2,
+  //     valueToCommit2,
+  //     comX2,
+  //     comY2
+  //   );
+
+  //   if (verify != true) {
+  //     throw new Error("Verify 1 not true");
+  //   }
+
+  //   if (verify2 != true) {
+  //     throw new Error("Verify 2 not true");
+  //   }
+
+  //   let added = await instance.addCommitment.call(
+  //     randValue1,
+  //     comX1,
+  //     comY1,
+  //     randValue2,
+  //     comX2,
+  //     comY2
+  //   );
+  //   let comSumX3 = added[0];
+  //   let comSumY3 = added[1];
+
+  //   console.log(
+  //     "SUM: ",
+  //     web3.utils.toHex(comSumX3),
+  //     web3.utils.toHex(comSumY3)
+  //   );
+
+  //   let randValue3 = randValue1;
+  //   let sub = await instance.subCommitment.call(
+  //     210,
+  //     comSumX3,
+  //     comSumY3,
+  //     randValue2,
+  //     comX2,
+  //     comY2
+  //   );
+  //   let comSubX3 = sub[0];
+  //   let comSubY3 = sub[1];
+
+  //   console.log(
+  //     "Commit3 - commit2 = commit1: ",
+  //     web3.utils.toHex(comSubX3),
+  //     web3.utils.toHex(comSubY3)
+  //   );
+
+  //   let res =
+  //     web3.utils.toHex(comX1) == web3.utils.toHex(comSubX3) &&
+  //     web3.utils.toHex(comY1) == web3.utils.toHex(comSubY3);
+
+  //   assert.equal(verify, true, `The value ${verify}.`);
+  // });
+
   it("Add Commitment", async () => {
     const instance = await PedersenCommitment.deployed();
 
     let randValue1 = 42;
     let valueToCommit1 = 100;
-    let committed1 = await instance.commit.call(randValue1, valueToCommit1);
-    let comX1 = committed1[0];
-    let comY1 = committed1[1];
-
-    // console.log(
-    //   "committed res 1: ",
-    //   web3.utils.toHex(comX1),
-    //   web3.utils.toHex(comY1)
-    // );
+    let committed1 = await instance.commit(randValue1, valueToCommit1, {
+      from: accounts[0],
+    });
+    let event1 = committed1.logs.find((log) => log.event === "LogCommitment");
+    assert(event1, "LogCommitment event for first commitment not found");
+    let comX1 = event1.args.x.toString();
+    let comY1 = event1.args.y.toString();
 
     let randValue2 = 42;
     let valueToCommit2 = 100;
-    let committed2 = await instance.commit.call(randValue2, valueToCommit2);
-    let comX2 = committed2[0];
-    let comY2 = committed2[1];
+    let committed2 = await instance.commit(randValue2, valueToCommit2, {
+      from: accounts[0],
+    });
+    let event2 = committed2.logs.find((log) => log.event === "LogCommitment");
+    assert(event2, "LogCommitment event for second commitment not found");
+    let comX2 = event2.args.x.toString();
+    let comY2 = event2.args.y.toString();
 
-    // console.log(
-    //   "committed res 2: ",
-    //   web3.utils.toHex(comX2),
-    //   web3.utils.toHex(comY2)
-    // );
-
-    let verify = await instance.verify.call(
-      randValue1,
-      valueToCommit1,
-      comX1,
-      comY1
-    );
-
-    let verify2 = await instance.verify.call(
-      randValue2,
-      valueToCommit2,
-      comX2,
-      comY2
-    );
-
-    if (verify != true) {
-      throw new Error("Verify 1 not true");
-    }
-
-    if (verify2 != true) {
-      throw new Error("Verify 2 not true");
-    }
-
-    let added = await instance.addCommitment.call(
+    let added = await instance.addCommitment(
       randValue1,
       comX1,
       comY1,
       randValue2,
       comX2,
-      comY2
+      comY2,
+      { from: accounts[0] }
     );
-    let comSumX3 = added[0];
-    let comSumY3 = added[1];
+    let addedEvent = added.logs.find((log) => log.event === "LogCommitment");
+    assert(addedEvent, "LogCommitment event for addCommitment not found");
+    let comSumX3 = addedEvent.args.x.toString();
+    let comSumY3 = addedEvent.args.y.toString();
 
-    // console.log(
-    //   "committed add 1: ",
-    //   web3.utils.toHex(comX3),
-    //   web3.utils.toHex(comY3)
-    // );
-
-    // console.log(
-    //   "SUM: ",
-    //   web3.utils.toHex(comSumX3),
-    //   web3.utils.toHex(comSumY3)
-    // );
-
+    // Recommit with combined values
     let randValue3 = randValue1 + randValue2;
     let valueToCommit3 = valueToCommit1 + valueToCommit2;
-    let committed3 = await instance.commit.call(randValue3, valueToCommit3);
-    let comX3 = committed3[0];
-    let comY3 = committed3[1];
+    let committed3 = await instance.commit(randValue3, valueToCommit3, {
+      from: accounts[0],
+    });
+    let committed3Event = committed3.logs.find(
+      (log) => log.event === "LogCommitment"
+    );
+    assert(committed3Event, "LogCommitment event for recommitment not found");
+    let comX3 = committed3Event.args.x.toString();
+    let comY3 = committed3Event.args.y.toString();
 
-    // console.log(
-    //   "SINGLE COMMIT: ",
-    //   web3.utils.toHex(comX3),
-    //   web3.utils.toHex(comY3)
-    // );
+    let res = comX3 === comSumX3 && comY3 === comSumY3;
 
-    let res =
-      web3.utils.toHex(comX3) == web3.utils.toHex(comSumX3) &&
-      web3.utils.toHex(comY3) == web3.utils.toHex(comSumY3);
-
-    // verfica che con rand diversi il valore è diverso quando torni indietro
-
-    // console.log(res);
-
-    assert.equal(verify, true, `The value ${verify}.`);
+    assert.equal(res, true, "Add Commitment failed.");
   });
 
   it("Sub Commitment", async () => {
@@ -257,90 +403,56 @@ contract("PedersenCommitment", (accounts) => {
 
     let randValue1 = 42;
     let valueToCommit1 = 100;
-    let committed1 = await instance.commit.call(randValue1, valueToCommit1);
-    let comX1 = committed1[0];
-    let comY1 = committed1[1];
-
-    console.log(
-      "committed res 1: ",
-      web3.utils.toHex(comX1),
-      web3.utils.toHex(comY1)
-    );
+    let committed1 = await instance.commit(randValue1, valueToCommit1, {
+      from: accounts[0],
+    });
+    let event1 = committed1.logs.find((log) => log.event === "LogCommitment");
+    assert(event1, "LogCommitment event for first commitment not found");
+    let comX1 = event1.args.x.toString();
+    let comY1 = event1.args.y.toString();
 
     let randValue2 = 42;
     let valueToCommit2 = 100;
-    let committed2 = await instance.commit.call(randValue2, valueToCommit2);
-    let comX2 = committed2[0];
-    let comY2 = committed2[1];
+    let committed2 = await instance.commit(randValue2, valueToCommit2, {
+      from: accounts[0],
+    });
+    let event2 = committed2.logs.find((log) => log.event === "LogCommitment");
+    assert(event2, "LogCommitment event for second commitment not found");
+    let comX2 = event2.args.x.toString();
+    let comY2 = event2.args.y.toString();
 
-    // console.log(
-    //   "committed res 2: ",
-    //   web3.utils.toHex(comX2),
-    //   web3.utils.toHex(comY2)
-    // );
-
-    let verify = await instance.verify.call(
-      randValue1,
-      valueToCommit1,
-      comX1,
-      comY1
-    );
-
-    let verify2 = await instance.verify.call(
-      randValue2,
-      valueToCommit2,
-      comX2,
-      comY2
-    );
-
-    if (verify != true) {
-      throw new Error("Verify 1 not true");
-    }
-
-    if (verify2 != true) {
-      throw new Error("Verify 2 not true");
-    }
-
-    let added = await instance.addCommitment.call(
+    let added = await instance.addCommitment(
       randValue1,
       comX1,
       comY1,
       randValue2,
       comX2,
-      comY2
+      comY2,
+      { from: accounts[0] }
     );
-    let comSumX3 = added[0];
-    let comSumY3 = added[1];
-
-    console.log(
-      "SUM: ",
-      web3.utils.toHex(comSumX3),
-      web3.utils.toHex(comSumY3)
-    );
+    let addedEvent = added.logs.find((log) => log.event === "LogCommitment");
+    assert(addedEvent, "LogCommitment event for addCommitment not found");
+    let comSumX3 = addedEvent.args.x.toString();
+    let comSumY3 = addedEvent.args.y.toString();
 
     let randValue3 = randValue1;
-    let sub = await instance.subCommitment.call(
+    let sub = await instance.subCommitment(
       210,
       comSumX3,
       comSumY3,
       randValue2,
       comX2,
-      comY2
+      comY2,
+      { from: accounts[0] }
     );
-    let comSubX3 = sub[0];
-    let comSubY3 = sub[1];
+    let subEvent = sub.logs.find((log) => log.event === "LogCommitment");
+    assert(subEvent, "LogCommitment event for subCommitment not found");
+    let comSubX3 = subEvent.args.x.toString();
+    let comSubY3 = subEvent.args.y.toString();
 
-    console.log(
-      "Commit3 - commit2 = commit1: ",
-      web3.utils.toHex(comSubX3),
-      web3.utils.toHex(comSubY3)
-    );
+    let res = comX1 === comSubX3 && comY1 === comSubY3;
 
-    let res =
-      web3.utils.toHex(comX1) == web3.utils.toHex(comSubX3) &&
-      web3.utils.toHex(comY1) == web3.utils.toHex(comSubY3);
-
-    assert.equal(verify, true, `The value ${verify}.`);
+    assert.equal(res, true, "Sub Commitment failed.");
   });
 
   // it("Scalar Commitment", async () => {
