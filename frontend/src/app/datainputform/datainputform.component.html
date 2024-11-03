@@ -1,27 +1,69 @@
 <div class="row">
+  <!-- Name input -->
   <div class="col">
     <mat-form-field>
       <mat-label>Nome</mat-label>
-      <input matInput>
-    </mat-form-field>
-  </div>
-  <div class="col">
-    <mat-form-field>
-      <mat-label>Cognome</mat-label>
-      <input matInput>
+      <input matInput />
     </mat-form-field>
   </div>
 
+  <!-- Surname input -->
+  <div class="col">
+    <mat-form-field>
+      <mat-label>Cognome</mat-label>
+      <input matInput />
+    </mat-form-field>
+  </div>
+
+  <!-- Random Value input -->
+  <div class="col-4">
+    <mat-form-field>
+      <mat-label>Random Value</mat-label>
+      <input
+        matInput
+        [(ngModel)]="randomValue"
+        placeholder="Enter Random Value"
+      />
+    </mat-form-field>
+  </div>
+
+  <!-- Date picker -->
   <div class="col-4">
     <mat-form-field>
       <mat-label>Choose a date</mat-label>
-      <input matInput [matDatepicker]="picker" (dateChange)="onDateChange($event)">
+      <input
+        matInput
+        [matDatepicker]="picker"
+        (dateChange)="onDateChange($event)"
+      />
       <mat-hint>MM/DD/YYYY</mat-hint>
-      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker-toggle
+        matIconSuffix
+        [for]="picker"
+      ></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field> 
+    </mat-form-field>
   </div>
-  <div class="col">
+</div>
+
+<!-- New section: Transaction ID input and Fetch Commitment -->
+<div class="row mt-3">
+  <!-- Transaction ID input -->
+  <div class="col-4">
+    <mat-form-field>
+      <mat-label>Transaction ID</mat-label>
+      <input
+        matInput
+        [(ngModel)]="transactionId"
+        placeholder="Enter Transaction ID"
+      />
+    </mat-form-field>
+  </div>
+</div>
+
+<!-- Sign in button -->
+<div class="row mt-3">
+  <div class="col text-end">
     <button class="btn btn-primary" (click)="onSubmit()">Sign in</button>
   </div>
 </div>

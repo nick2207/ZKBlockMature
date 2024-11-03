@@ -11,14 +11,21 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { JsonRpcSigner } from 'ethers';
 import { MetaMaskService } from '../metamask-handler.service';
+import { FormsModule } from '@angular/forms';
 
+import PedersenCommitment from '../../../../backend/build/contracts/PedersenCommitment.json';
 import ZKBlockMature from '../../../../backend/build/contracts/ZKBlockMature.json';
 import vKey from '../../../zkp_circom/verification_key.json';
 
 @Component({
   selector: 'app-datainputform',
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, MatDatepickerModule],
+  imports: [
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    FormsModule,
+  ],
   providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './datainputform.component.html',
@@ -29,11 +36,15 @@ export class DatainputformComponent {
   account: JsonRpcSigner | null = null;
   balance: string | null = null;
   isConnected: boolean = false;
+  transactionId: string = '';
+  randomValue: string = '';
 
   private wasmFilePath: string = 'checkAge.wasm';
   private zkeyFilePath: string = 'checkAge_001.zkey';
   private zkBlockMatureAddress: string =
-    '0x5a5ABF4f951517918dCEb1887089320e9f01f8F9';
+    '0xde15fdFA6A7e1b4b4A767e46D52da0914db06514';
+  private pedersenCommitmentAddress: string =
+    '0x09488dbFF722b49E519157C2863BAbde5E45847F';
 
   constructor(private metaMaskService: MetaMaskService) {
     this.selectedDate = new Date();
@@ -56,10 +67,61 @@ export class DatainputformComponent {
       currentMonth: (currentDate.getMonth() + 1).toString(),
       currentYear: currentDate.getFullYear().toString(),
     };
-
-    const { proof, publicSignals } = await this.generateProof(inputSignals);
     await this.connectToMetaMask();
-    await this.sendData(proof, publicSignals);
+
+    const commitmentCheck = await this.checkCommitment(
+      inputSignals.birthDay,
+      inputSignals.birthMonth,
+      inputSignals.birthYear,
+      this.randomValue,
+      this.transactionId
+    );
+    console.log('commitment result: ', commitmentCheck);
+    if (commitmentCheck) {
+      const { proof, publicSignals } = await this.generateProof(inputSignals);
+      await this.sendData(proof, publicSignals);
+    }
+  }
+
+  async checkCommitment(
+    day: string,
+    month: string,
+    year: string,
+    randomValue: string,
+    txId: string
+  ): Promise<boolean> {
+    let monthPadded = month.padStart(2, '0');
+    let dayPadded = day.padStart(2, '0');
+    const birthInt = BigInt(`${year}${monthPadded}${dayPadded}`);
+
+    const web3 = new Web3(Web3.givenProvider || 'http://127.0.0.1:7475');
+
+    const pedersenCommitmentAbi: AbiItem[] =
+      PedersenCommitment.abi as AbiItem[];
+
+    const pedersenCommitment = new web3.eth.Contract(
+      pedersenCommitmentAbi,
+      this.pedersenCommitmentAddress
+    );
+
+    const account = await this.metaMaskService.getAccount();
+
+    try {
+      if (!(await pedersenCommitment.methods.getPoint().call()))
+        await pedersenCommitment.methods
+          .setPoint()
+          .send({ from: account.address, gas: 30000000 });
+      const generator = await pedersenCommitment.methods.getPoint().call();
+      console.log('Generator: ', generator);
+      var result = await pedersenCommitment.methods
+        .verify(BigInt(randomValue), birthInt, BigInt(txId))
+        .call({ from: account.address, gas: 30000000 });
+      console.log('result: ', result);
+      return result;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
   }
 
   async generateProof(inputSignals: CircuitSignals) {
