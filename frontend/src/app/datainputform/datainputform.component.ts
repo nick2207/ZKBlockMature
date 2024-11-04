@@ -16,6 +16,9 @@ import { FormsModule } from '@angular/forms';
 import PedersenCommitment from '../../../../backend/build/contracts/PedersenCommitment.json';
 import ZKBlockMature from '../../../../backend/build/contracts/ZKBlockMature.json';
 import vKey from '../../../zkp_circom/verification_key.json';
+import { ToolbarComponent } from "../toolbar/toolbar.component";
+import { Router } from '@angular/router';
+import { ResultType } from '../utils/ResultType';
 
 @Component({
   selector: 'app-datainputform',
@@ -25,7 +28,8 @@ import vKey from '../../../zkp_circom/verification_key.json';
     MatInputModule,
     MatDatepickerModule,
     FormsModule,
-  ],
+    ToolbarComponent
+],
   providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './datainputform.component.html',
@@ -46,7 +50,10 @@ export class DatainputformComponent {
   private pedersenCommitmentAddress: string =
     '0x09488dbFF722b49E519157C2863BAbde5E45847F';
 
-  constructor(private metaMaskService: MetaMaskService) {
+  constructor(
+    private metaMaskService: MetaMaskService,
+    private router: Router
+  ) {
     this.selectedDate = new Date();
   }
 
@@ -217,9 +224,11 @@ export class DatainputformComponent {
       console.log('Proof verification result: ', proofVerification);
       // publicSignals[0] == constrain satisfied
       if (publicSignals[0] == '0') {
-        console.log('Sei maggiorenne, vecchio di merda! ', publicSignals[0]);
+        this.router.navigate(['/result-page'], { queryParams: { result: ResultType.CHECK_OK } })
+        //console.log('Sei maggiorenne! ', publicSignals[0]);
       } else {
-        console.log('Sei minorenne, bimbomnkia del cazzo! ', publicSignals[0]);
+        this.router.navigate(['/result-page'], { queryParams: { result: ResultType.CHECK_KO } })
+        //console.log('Sei minorenne! ', publicSignals[0]);
       }
     } catch (error) {
       console.error('Error sending data:', error);
