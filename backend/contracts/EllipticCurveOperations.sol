@@ -2,20 +2,23 @@
 
 pragma solidity ^0.8.21;
 
+/**
+ * @title EllipticCurveOperations
+ * @dev Contains essential elliptic curve arithmetic functions in modular arithmetic.
+ */
 contract EllipticCurveOperations {
-    /*
-        value:uint256 -> value of which to find the modular inverse
-        mod:uint256 -> value of the modulus
-    */
+    
+   /**
+     * @dev Calculates modular inverse using the Extended Euclidean Algorithm.
+     * @param value The value to invert
+     * @param mod The modulus
+     * @return The modular inverse of `value` under `mod`
+     */
     function modInverse(
         uint256 value,
         uint256 mod
     ) public pure returns (uint256) {
-        if (value == 0 || mod <= 1 || value == mod) {
-            revert(
-                "Numbers are not valid for one of the following reasons: 1. Value to be inverted is zero.\nModulus is <= 1.\nValue and modulus have are equal."
-            );
-        }
+        require(value != 0 && mod > 1 && value != mod, "Invalid input values");
 
         // ax + by = 1 => (coefficient_value * value) + (coefficient_mod * mod) = 1
 
@@ -49,13 +52,11 @@ contract EllipticCurveOperations {
             );
 
             // r1 - q * r2 is the remainder
-            // non so serve o meno il mulmod. una volta era (dividend, remainder) = (remainder, dividend - quotient, remainder );
-            // meno precisi (dividend, remainder) = (remainder, dividend - mulmod(quotient, remainder, mod) );
+            // not sure if mulmod is needed. previous operation was (dividend, remainder) = (remainder, dividend - quotient, remainder );
+            // less precise (dividend, remainder) = (remainder, dividend - mulmod(quotient, remainder, mod) );
             (dividend, remainder) = (
                 remainder,
                 dividend - quotient * remainder
-                // perché qui fare il mulmod mi falsa i calcoli?????
-                // addmod(dividend - mulmod(quotient, remainder, mod), 0, mod)
             );
         }
 
@@ -68,9 +69,13 @@ contract EllipticCurveOperations {
         return result;
     }
 
-    /*
-        Calcuates the inverse of a point on X axis
-    */
+    /**
+     * @dev Computes the inverse of a point (x, y) on the elliptic curve.
+     * @param x x-coordinate of the point
+     * @param y y-coordinate of the point
+     * @param mod The modulus
+     * @return (x, -y mod p) - The inverse point on the curve
+     */
     function pointInverse(
         uint256 x,
         uint256 y,
@@ -80,9 +85,15 @@ contract EllipticCurveOperations {
         return (x, addmod(mod - y, 0, mod));
     }
 
-    /*
-        This function verifies that a point (x,y) is on curve (y^2 = x^3 + ax + b)
-    */
+    /**
+     * @dev Checks if the point (x, y) lies on the elliptic curve defined by y^2 = x^3 + ax + b.
+     * @param x x-coordinate of the point
+     * @param y y-coordinate of the point
+     * @param a Coefficient of x in the curve equation
+     * @param b Constant term in the curve equation
+     * @param mod The modulus
+     * @return True if the point is on the curve; false otherwise
+     */
     function isOnCurve(
         uint256 x,
         uint256 y,
@@ -113,9 +124,14 @@ contract EllipticCurveOperations {
         return lhs == rhs;
     }
 
-    /*
-        This function convets Jacobian coordinates to affine coordinates
-    */
+    /**
+     * @dev Converts Jacobian coordinates (X, Y, Z) to affine coordinates.
+     * @param x x-coordinate in Jacobian
+     * @param y y-coordinate in Jacobian
+     * @param z z-coordinate in Jacobian
+     * @param mod The modulus
+     * @return (x, y) - Affine coordinates
+     */
     function toAffine(
         uint256 x,
         uint256 y,
@@ -127,6 +143,8 @@ contract EllipticCurveOperations {
         uint256 z_cubed;
         uint256 x_affine;
         uint256 y_affine;
+
+        if (z == 0) return (0, 0); // Return point at infinity if z is 0
 
         z_inv = modInverse(z, mod);
         z_squared = mulmod(z_inv, z_inv, mod);
@@ -151,7 +169,17 @@ contract EllipticCurveOperations {
         uint256 hSquared;
         uint256 hCubed;
     }
-
+    /**
+     * @dev Adds two points in Jacobian coordinates: (x1, y1, z1) + (x2, y2, z2).
+     * @param x1 x-coordinate of the first point
+     * @param y1 y-coordinate of the first point
+     * @param z1 z-coordinate of the first point (1 for affine points)
+     * @param x2 x-coordinate of the second point
+     * @param y2 y-coordinate of the second point
+     * @param z2 z-coordinate of the second point (1 for affine points)
+     * @param mod The modulus
+     * @return (x3, y3, z3) - Resulting point in Jacobian coordinates after addition
+     */
     function jacobianAddition(
         uint256 x1,
         uint256 y1,
@@ -161,7 +189,6 @@ contract EllipticCurveOperations {
         uint256 z2,
         uint256 mod
     ) public pure returns (uint256, uint256, uint256) {
-        // add some checks !!!
 
         jacAddTempVar memory temp;
 
@@ -169,6 +196,7 @@ contract EllipticCurveOperations {
         uint256 newY;
         uint256 newZ;
 
+        // add some checks !!!
         if (x1 == 0 && y1 == 0) {
             return (x2, y2, z2);
         }
@@ -228,6 +256,15 @@ contract EllipticCurveOperations {
         uint256 mSquared;
     }
 
+    /**
+     * @dev Doubles a point in Jacobian coordinates: 2 * (x, y, z).
+     * @param x x-coordinate of the point
+     * @param y y-coordinate of the point
+     * @param z z-coordinate of the point
+     * @param curveConst Curve constant in the equation y^2 = x^3 + ax + b
+     * @param mod The modulus
+     * @return (x3, y3, z3) - Resulting point in Jacobian coordinates after doubling
+     */
     function jacobianDouble(
         uint256 x,
         uint256 y,
@@ -281,6 +318,17 @@ contract EllipticCurveOperations {
         uint256 zCopy;
     }
 
+    /**
+     * @dev Multiplies a point (x, y, z) in Jacobian coordinates by a scalar `scalar`.
+     * Uses the double-and-add algorithm to perform scalar multiplication on the elliptic curve.
+     * @param x The x-coordinate of the point in Jacobian form
+     * @param y The y-coordinate of the point in Jacobian form
+     * @param z The z-coordinate of the point in Jacobian form
+     * @param scalar The scalar to multiply by
+     * @param curveConst The curve constant (usually 'a' in the elliptic curve equation)
+     * @param mod The modulus (typically the field prime)
+     * @return (xResult, yResult, zResult) - The resulting point in Jacobian coordinates after multiplication
+    */
     function jacobianMultiplication(
         uint256 x,
         uint256 y,
@@ -331,6 +379,16 @@ contract EllipticCurveOperations {
         return (x, y, z);
     }
 
+
+    /**
+     * @dev Adds two points (x1, y1) and (x2, y2) in affine coordinates.
+     * @param x1 x-coordinate of the first point
+     * @param y1 y-coordinate of the first point
+     * @param x2 x-coordinate of the second point
+     * @param y2 y-coordinate of the second point
+     * @param mod The modulus (typically the field prime)
+     * @return (x3, y3) - The resulting point after addition in affine coordinates
+     */
     function affineAddition(
         uint256 x1,
         uint256 y1,
@@ -356,6 +414,18 @@ contract EllipticCurveOperations {
         return (xAffine, yAffine);
     }
 
+    
+    /**
+     * @dev Subtracts point (x2, y2) from point (x1, y1) in affine coordinates.
+     * The result is computed as (x3, y3) = (x1, y1) + (-x2, y2).
+     * @param x1 The x-coordinate of the first point
+     * @param y1 The y-coordinate of the first point
+     * @param x2 The x-coordinate of the second point
+     * @param y2 The y-coordinate of the second point
+     * @param curveConst The curve constant (usually 'a' in the elliptic curve equation)
+     * @param mod The modulus (typically the field prime)
+     * @return (x3, y3) - The resulting point coordinates after subtraction
+    */
     function affineSub(
         uint256 x1,
         uint256 y1,
@@ -384,6 +454,16 @@ contract EllipticCurveOperations {
         return (xAffine, yAffine);
     }
 
+    /**
+     * @dev Multiplies a point (x, y) by a scalar using affine coordinates.
+     * This function uses the double-and-add algorithm for scalar multiplication.
+     * @param x The x-coordinate of the point to be multiplied
+     * @param y The y-coordinate of the point to be multiplied
+     * @param scalar The scalar by which to multiply the point
+     * @param curveConst The curve constant (usually 'a' in the elliptic curve equation)
+     * @param mod The modulus (typically the field prime)
+     * @return (xRes, yRes) - The resulting point coordinates after multiplication
+    */
     function affineMul(
         uint256 x,
         uint256 y,

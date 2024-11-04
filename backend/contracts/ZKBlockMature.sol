@@ -1,36 +1,4 @@
-
-
-// // SPDX-License-Identifier: GPL-3.0
-// pragma solidity ^0.8.21;
-
-// import "./Groth16Verifier.sol";
-// import "../node_modules/hardhat/console.sol";
-
-// contract ZKBlockMature {
-
-//     Groth16Verifier public groth16Verifier;
-
-//     event ProofVerification(bool result);
-//     event DebugLog(string message, bool value); 
-
-//     constructor(address _groth16VerifierAddress) {
-//         groth16Verifier = Groth16Verifier(_groth16VerifierAddress);
-//     }
-
-//     function verifyProof(
-//         uint[2] memory _pA, 
-//         uint[2][2] memory _pB, 
-//         uint[2] memory _pC, 
-//         uint[1] memory _pubSignals
-//     ) public {
-//         emit DebugLog("Before calling verifier", false);
-//         bool result = groth16Verifier.verifyProof(_pA, _pB, _pC, _pubSignals);
-//         emit DebugLog("After calling verifier", result); // Emit event with result
-//         emit ProofVerification(result);
-//     }
-// }
-
-
+//  SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.21;
 
 // import "./Groth16Verifier.sol";
@@ -38,6 +6,7 @@ import "./AgeVerifier.sol";
 import "../node_modules/hardhat/console.sol";
 
 interface IGroth16Verifier {
+
     function verifyProof(
         uint[2] memory _pA, 
         uint[2][2] memory _pB, 
@@ -57,6 +26,12 @@ contract ZKBlockMature {
         s_grothVerifierAddress = grothVerifierAddress;
     }
 
+    /**
+     * @dev Submits a proof for verification.
+     * @notice This function calls the verifyProof function of the Groth16 verifier contract.
+     * Emits a ProofVerification event with the result of the verification.
+     * Reverts if the proof is invalid.
+     */
     function submitProof(uint[2] memory _pA, 
         uint[2][2] memory _pB, 
         uint[2] memory _pC, 
