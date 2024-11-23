@@ -45,3 +45,7 @@ A decentralized application (DApp) that utilizes **Zero-Knowledge Proofs (ZKP)**
 - Ethereum-compatible testnet or local blockchain (e.g., Ganache, Hardhat)
 
 ---
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)
