@@ -1,0 +1,47 @@
+<app-toolbar [appName]="'ZKPMature'"></app-toolbar>
+<div class="container l-r-padding text-center">
+    <h2>Compile the form and check your age</h2>
+
+    <div class="row justify-content-center align-items-center mt-5">
+        <div class="col-6">
+            <mat-form-field class="full-width">
+                <mat-label>Choose a date</mat-label>
+                <input matInput [matDatepicker]="picker" (dateChange)="onDateChange($event)" placeholder="MM/DD/YYYY" />
+                <mat-datepicker-toggle matIconSuffix [for]="picker">
+                </mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div class="row justify-content-center align-items-center">
+        <!-- Random Value input -->
+        <div class="col-6 mt-5">
+            <mat-form-field class="full-width">
+                <mat-label>Random Value</mat-label>
+                <input matInput [(ngModel)]="randomValue" placeholder="Enter Random Value" />
+            </mat-form-field>
+        </div>
+
+        <!-- Date picker -->
+    </div>
+
+    <!-- New section: Transaction ID input and Fetch Commitment -->
+    <div class="row justify-content-center align-items-center mt-5">
+        <!-- Transaction ID input -->
+        <div class="col-6">
+            <mat-form-field class="full-width">
+                <mat-label>Transaction ID</mat-label>
+                <input matInput [(ngModel)]="transactionId" placeholder="Enter Transaction ID" />
+            </mat-form-field>
+        </div>
+    </div>
+
+    <!-- Sign in button -->
+    <div class="row mt-5">
+        <div class="col d-flex justify-content-center">
+            <button class="btn btn-warning w-50 py-3" (click)="onSubmit()">Check you age!</button>
+        </div>
+    </div>
+
+</div>
